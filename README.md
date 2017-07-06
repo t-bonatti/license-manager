@@ -16,8 +16,7 @@ go build main.go
 Add license
 
 ```
-curl -i -H "Content-Type:application/json" -X POST localhost:3000/license -d '{"id": "abcde12345", "version" : "v2", "info": {"user" : "blah", "company" : "xxyyxx"}
-}'
+curl -i -H "Content-Type:application/json" -X POST localhost:3000/license -d '{"id": "abcde12345", "version" : "v2", "info": {"user" : "blah", "company" : "xxyyxx"}}'
 ```
 
 Get license
