@@ -6,18 +6,18 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/t-bonatti/license-manager/controller"
-	"gopkg.in/mgo.v2"
+	"github.com/t-bonatti/license-manager/datastore"
 )
 
-func New(session *mgo.Session) *http.Server {
+func New(ds datastore.DataStore) *http.Server {
 
 	var mux = mux.NewRouter()
 	mux.Path("/status").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "OK")
 	})
 
-	mux.Path("/license").Methods(http.MethodPost).HandlerFunc(controller.CreateLicense(session))
-	mux.Path("/license/{id}/versions/{version}").Methods(http.MethodGet).HandlerFunc(controller.GetLicense(session))
+	mux.Path("/license").Methods(http.MethodPost).HandlerFunc(controller.Create(ds))
+	mux.Path("/license/{id}/versions/{version}").Methods(http.MethodGet).HandlerFunc(controller.Get(ds))
 
 	var server = &http.Server{
 		Handler: mux,
