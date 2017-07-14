@@ -14,7 +14,7 @@ func New(db sqlx.DB) DataStore {
 }
 
 func (ds *DataStore) Get(id string, version string) (license model.License, err error) {
-	return license, ds.db.Get(&license, "SELECT * FROM licenses WHERE id = $1 and license = $2", id, version)
+	return license, ds.db.Get(&license, "SELECT * FROM licenses WHERE id = $1 and version = $2", id, version)
 }
 
 func (ds *DataStore) Create(license model.License) (err error) {

@@ -34,14 +34,14 @@ func Get(ds datastore.DataStore) http.HandlerFunc {
 
 		license, err := ds.Get(id, version)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Not found", http.StatusNotFound)
+			} else {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
-		if license.ID == "" {
-			http.Error(w, "Not found", http.StatusNotFound)
-			return
-		}
 		if err := json.NewEncoder(w).Encode(license); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
