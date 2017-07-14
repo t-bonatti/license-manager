@@ -4,7 +4,12 @@ Manage application licenses with versions
 
 # Dependences
 
-license-manager expects a MongoDB instance running at localhost:{defaultPort}
+license-manager expects a PostgreSQL instance
+
+# Environment Variables
+
+- DATABASE_URL
+- PORT
 
 # Build
 
