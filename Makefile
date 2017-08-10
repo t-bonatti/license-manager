@@ -3,6 +3,9 @@ GOPACKAGES = $$(go list ./...  | grep -v /vendor/)
 
 default: build
 
+setup:
+	dep ensure
+
 workdir:
 	mkdir -p workdir
 
