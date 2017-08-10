@@ -7,11 +7,11 @@ jobs:
     working_directory: /go/src/github.com/t-bonatti/license-manager
 
     environment:
-      TEST_RESULTS: /tmp/test-results
+      TEST_RESULTS: /tmp/test-resultsg
 
     steps:
       - checkout
-      - run: mkdir -p $TEST_RESULTS
+      - run: mkdir -p "$TEST_RESULTS"
       - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Run unit tests
