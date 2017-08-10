@@ -18,7 +18,7 @@ jobs:
           name: Run unit tests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            magske test | tee ${TEST_RESULTS}/go-test.out
+            make test | tee ${TEST_RESULTS}/go-test.out
       - run: make
       - store_artifacts:
           path: /tmp/test-results
