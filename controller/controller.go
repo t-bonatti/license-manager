@@ -23,7 +23,7 @@ func Create(ds datastore.DataStore) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 
