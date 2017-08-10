@@ -10,6 +10,7 @@ import (
 	"github.com/t-bonatti/license-manager/model"
 )
 
+// Create a lincense
 func Create(ds datastore.DataStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var license model.License
@@ -27,6 +28,7 @@ func Create(ds datastore.DataStore) http.HandlerFunc {
 	}
 }
 
+// Get a lincense by version
 func Get(ds datastore.DataStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
