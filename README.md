@@ -1,4 +1,5 @@
 # license-manager
+[![CircleCI](https://circleci.com/gh/t-bonatti/license-manager.svg?style=shield)](https://circleci.com/gh/t-bonatti/license-manager)
 
 Manage application licenses with versions
 
