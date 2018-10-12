@@ -9,7 +9,7 @@ import (
 	"github.com/t-bonatti/license-manager/datastore"
 )
 
-func New(ds datastore.DataStore) *http.Server {
+func New(ds datastore.DataStore, url string) *http.Server {
 
 	var mux = mux.NewRouter()
 	mux.Path("/status").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func New(ds datastore.DataStore) *http.Server {
 
 	var server = &http.Server{
 		Handler: mux,
-		Addr:    ":3000",
+		Addr:    url,
 	}
 
 	return server

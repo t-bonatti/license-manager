@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/apex/log"
 	_ "github.com/lib/pq"
 	"github.com/t-bonatti/license-manager/config"
@@ -19,7 +21,7 @@ func main() {
 		}
 	}()
 
-	server := server.New(datastore.New(*db))
+	server := server.New(datastore.New(*db), fmt.Sprintf(":%s", cfg.Port))
 	if err := server.ListenAndServe(); err != nil {
 		log.WithError(err).Fatal("failed to start up server")
 	}
