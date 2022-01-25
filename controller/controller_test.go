@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -17,36 +17,28 @@ import (
 
 func TestCreate(t *testing.T) {
 	var assert = assert.New(t)
-	var license = model.License{
-		ID:      "abcdef",
-		Version: "1",
-		Info:    types.JSONText("{}"),
-	}
 	var ds = new(mockDatastore)
 	ds.On("Create", mock.AnythingOfType("model.License")).Return(nil)
-	var ts = httptest.NewServer(Create(ds))
-	defer ts.Close()
-	body, _ := json.Marshal(&license)
-	res, err := http.Post(ts.URL, "application/json", bytes.NewReader(body))
-	assert.NoError(err)
-	assert.Equal(http.StatusCreated, res.StatusCode)
+	rPath := "/license"
+	r := gin.Default()
+	r.POST(rPath, Create(ds))
+	req, _ := http.NewRequest("POST", rPath, strings.NewReader(`{"id": "abcdef","version": "1","info":{}}`))
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	assert.Equal(http.StatusCreated, w.Code)
 }
 
 func TestCreateDsError(t *testing.T) {
 	var assert = assert.New(t)
-	var license = model.License{
-		ID:      "abcdef",
-		Version: "1",
-		Info:    types.JSONText("{}"),
-	}
 	var ds = new(mockDatastore)
 	ds.On("Create", mock.AnythingOfType("model.License")).Return(errors.New("error"))
-	var ts = httptest.NewServer(Create(ds))
-	defer ts.Close()
-	body, _ := json.Marshal(&license)
-	res, err := http.Post(ts.URL, "application/json", bytes.NewReader(body))
-	assert.NoError(err)
-	assert.Equal(http.StatusBadRequest, res.StatusCode)
+	rPath := "/license"
+	r := gin.Default()
+	r.POST(rPath, Create(ds))
+	req, _ := http.NewRequest("POST", rPath, strings.NewReader(`{"id": "abcdef","version": "1","info":{}}`))
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	assert.Equal(http.StatusBadRequest, w.Code)
 }
 
 func TestGet(t *testing.T) {
@@ -59,17 +51,16 @@ func TestGet(t *testing.T) {
 	var ds = new(mockDatastore)
 	ds.On("Get", "abcdef", "1").Return(license, nil)
 
-	var mux = mux.NewRouter()
-	mux.HandleFunc("/{id}/versions/{version}", Get(ds))
-	var ts = httptest.NewServer(mux)
-	defer ts.Close()
+	r := gin.Default()
+	r.GET("/license/:id/versions/:version", Get(ds))
+	req, _ := http.NewRequest("GET", "/license/abcdef/versions/1", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
 
 	var respLicense model.License
-	res, err := http.Get(ts.URL + "/abcdef/versions/1")
-	assert.NoError(err)
-	assert.NoError(json.NewDecoder(res.Body).Decode(&respLicense))
+	assert.NoError(json.NewDecoder(w.Body).Decode(&respLicense))
 	assert.Equal(license, respLicense)
-	assert.Equal(http.StatusOK, res.StatusCode)
+	assert.Equal(http.StatusOK, w.Code)
 }
 
 func TestGetDsError(t *testing.T) {
@@ -77,14 +68,13 @@ func TestGetDsError(t *testing.T) {
 	var ds = new(mockDatastore)
 	ds.On("Get", "abcdef", "1").Return(model.License{}, errors.New("fake err"))
 
-	var mux = mux.NewRouter()
-	mux.HandleFunc("/{id}/versions/{version}", Get(ds))
-	var ts = httptest.NewServer(mux)
-	defer ts.Close()
+	r := gin.Default()
+	r.GET("/license/:id/versions/:version", Get(ds))
+	req, _ := http.NewRequest("GET", "/license/abcdef/versions/1", strings.NewReader(`{"id": "1","name": "joe"}`))
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
 
-	res, err := http.Get(ts.URL + "/abcdef/versions/1")
-	assert.NoError(err)
-	assert.Equal(http.StatusInternalServerError, res.StatusCode)
+	assert.Equal(http.StatusInternalServerError, w.Code)
 }
 
 type mockDatastore struct {

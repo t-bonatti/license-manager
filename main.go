@@ -21,8 +21,6 @@ func main() {
 		}
 	}()
 
-	server := server.New(datastore.New(*db), fmt.Sprintf(":%s", cfg.Port))
-	if err := server.ListenAndServe(); err != nil {
-		log.WithError(err).Fatal("failed to start up server")
-	}
+	server := server.New(datastore.New(*db))
+	server.Run(fmt.Sprintf(":%s", cfg.Port))
 }

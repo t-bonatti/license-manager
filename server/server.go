@@ -1,28 +1,22 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/t-bonatti/license-manager/controller"
 	"github.com/t-bonatti/license-manager/datastore"
 )
 
-func New(ds datastore.DataStore, url string) *http.Server {
+func New(ds datastore.DataStore) *gin.Engine {
 
-	var mux = mux.NewRouter()
-	mux.Path("/status").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "OK")
+	r := gin.Default()
+	r.GET("/status", func(c *gin.Context) {
+		c.String(http.StatusOK, "OK")
 	})
 
-	mux.Path("/license").Methods(http.MethodPost).HandlerFunc(controller.Create(ds))
-	mux.Path("/license/{id}/versions/{version}").Methods(http.MethodGet).HandlerFunc(controller.Get(ds))
+	r.POST("/license", controller.Create(ds))
+	r.GET("/license/:id/versions/:version", controller.Get(ds))
 
-	var server = &http.Server{
-		Handler: mux,
-		Addr:    url,
-	}
-
-	return server
+	return r
 }
