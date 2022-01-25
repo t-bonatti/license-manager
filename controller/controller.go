@@ -1,51 +1,48 @@
 package controller
 
 import (
-	"encoding/json"
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/t-bonatti/license-manager/datastore"
 	"github.com/t-bonatti/license-manager/model"
 )
 
 // Create a lincense
-func Create(ds datastore.DataStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Create(ds datastore.DataStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		var license model.License
-		if err := json.NewDecoder(r.Body).Decode(&license); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err := c.Bind(&license); err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		license.CreatedAt = time.Now()
 		if err := ds.Create(license); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
-		w.WriteHeader(http.StatusCreated)
+		c.Writer.WriteHeader(http.StatusCreated)
 	}
 }
 
 // Get a lincense by version
-func Get(ds datastore.DataStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := mux.Vars(r)["id"]
-		version := mux.Vars(r)["version"]
+func Get(ds datastore.DataStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		version := c.Param("version")
 
 		license, err := ds.Get(id, version)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Not found", http.StatusNotFound)
+				c.String(http.StatusNotFound, "Not found")
 			} else {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				c.String(http.StatusInternalServerError, err.Error())
 			}
 			return
 		}
 
-		if err := json.NewEncoder(w).Encode(license); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		c.JSON(http.StatusOK, license)
 	}
 }
