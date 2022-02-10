@@ -9,7 +9,7 @@ license-manager expects a PostgreSQL instance
 
 # Environment Variables
 
-- DATABASE_URL
+- DATABASE_DSN
 - PORT
 
 # Build
