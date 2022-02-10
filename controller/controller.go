@@ -9,8 +9,23 @@ import (
 	"github.com/t-bonatti/license-manager/model"
 )
 
+type Controller interface {
+	Get() gin.HandlerFunc
+	Create() gin.HandlerFunc
+}
+
+type controllerImpl struct {
+	ds datastore.DataStore
+}
+
+// New creates a new controller
+func New() Controller {
+	ds := datastore.New()
+	return controllerImpl{ds: ds}
+}
+
 // Create a lincense
-func Create(ds datastore.DataStore) gin.HandlerFunc {
+func (ctrl controllerImpl) Create() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var license model.License
 		if err := c.Bind(&license); err != nil {
@@ -19,7 +34,7 @@ func Create(ds datastore.DataStore) gin.HandlerFunc {
 		}
 
 		license.CreatedAt = time.Now()
-		if err := ds.Create(license); err != nil {
+		if err := ctrl.ds.Create(license); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
@@ -28,12 +43,12 @@ func Create(ds datastore.DataStore) gin.HandlerFunc {
 }
 
 // Get a lincense by version
-func Get(ds datastore.DataStore) gin.HandlerFunc {
+func (ctrl controllerImpl) Get() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		version := c.Param("version")
 
-		license, err := ds.Get(id, version)
+		license, err := ctrl.ds.Get(id, version)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				c.String(http.StatusNotFound, "Not found")

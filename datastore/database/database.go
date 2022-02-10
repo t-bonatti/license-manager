@@ -1,18 +1,45 @@
 package database
 
 import (
+	"time"
+
 	"github.com/apex/log"
-	"github.com/jmoiron/sqlx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func Connect(url string) *sqlx.DB {
-	var log = log.WithField("url", url)
-	db, err := sqlx.Open("postgres", url)
+var db *gorm.DB
+
+func StartDB(dsn string) {
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
 	if err != nil {
-		log.WithError(err).Fatal("failed to open connection to database")
+		log.WithError(err).Fatal("Could not connect to the Postgres Database")
 	}
-	if err := db.Ping(); err != nil {
-		log.WithError(err).Fatal("failed to ping database")
+
+	db = database
+	config, _ := db.DB()
+	config.SetMaxIdleConns(10)
+	config.SetMaxOpenConns(100)
+	config.SetConnMaxLifetime(time.Hour)
+
+	//migrations.RunMigrations(db)
+}
+
+func CloseConn() error {
+	config, err := db.DB()
+	if err != nil {
+		return err
 	}
+
+	err = config.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetDatabase() *gorm.DB {
 	return db
 }

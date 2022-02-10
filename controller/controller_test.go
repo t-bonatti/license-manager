@@ -16,12 +16,13 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	var assert = assert.New(t)
-	var ds = new(mockDatastore)
+	assert := assert.New(t)
+	ds := new(mockDatastore)
 	ds.On("Create", mock.AnythingOfType("model.License")).Return(nil)
+	c := controllerImpl{ds: ds}
 	rPath := "/license"
 	r := gin.Default()
-	r.POST(rPath, Create(ds))
+	r.POST(rPath, c.Create())
 	req, _ := http.NewRequest("POST", rPath, strings.NewReader(`{"id": "abcdef","version": "1","info":{}}`))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -29,12 +30,13 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateDsError(t *testing.T) {
-	var assert = assert.New(t)
-	var ds = new(mockDatastore)
+	assert := assert.New(t)
+	ds := new(mockDatastore)
 	ds.On("Create", mock.AnythingOfType("model.License")).Return(errors.New("error"))
+	c := controllerImpl{ds: ds}
 	rPath := "/license"
 	r := gin.Default()
-	r.POST(rPath, Create(ds))
+	r.POST(rPath, c.Create())
 	req, _ := http.NewRequest("POST", rPath, strings.NewReader(`{"id": "abcdef","version": "1","info":{}}`))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -42,17 +44,18 @@ func TestCreateDsError(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	var assert = assert.New(t)
-	var license = model.License{
+	assert := assert.New(t)
+	license := model.License{
 		ID:      "abcdef",
 		Version: "1",
 		Info:    types.JSONText("{}"),
 	}
-	var ds = new(mockDatastore)
+	ds := new(mockDatastore)
 	ds.On("Get", "abcdef", "1").Return(license, nil)
 
+	c := controllerImpl{ds: ds}
 	r := gin.Default()
-	r.GET("/license/:id/versions/:version", Get(ds))
+	r.GET("/license/:id/versions/:version", c.Get())
 	req, _ := http.NewRequest("GET", "/license/abcdef/versions/1", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -64,12 +67,12 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetDsError(t *testing.T) {
-	var assert = assert.New(t)
-	var ds = new(mockDatastore)
+	assert := assert.New(t)
+	ds := new(mockDatastore)
 	ds.On("Get", "abcdef", "1").Return(model.License{}, errors.New("fake err"))
-
+	c := controllerImpl{ds: ds}
 	r := gin.Default()
-	r.GET("/license/:id/versions/:version", Get(ds))
+	r.GET("/license/:id/versions/:version", c.Get())
 	req, _ := http.NewRequest("GET", "/license/abcdef/versions/1", strings.NewReader(`{"id": "1","name": "joe"}`))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -82,11 +85,11 @@ type mockDatastore struct {
 }
 
 func (m mockDatastore) Create(license model.License) (err error) {
-	var args = m.Called(license)
+	args := m.Called(license)
 	return args.Error(0)
 }
 
 func (m mockDatastore) Get(id string, version string) (license model.License, err error) {
-	var args = m.Called(id, version)
+	args := m.Called(id, version)
 	return args.Get(0).(model.License), args.Error(1)
 }

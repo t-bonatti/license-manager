@@ -1,8 +1,9 @@
 package datastore
 
 import (
-	"github.com/jmoiron/sqlx"
+	"github.com/t-bonatti/license-manager/datastore/database"
 	"github.com/t-bonatti/license-manager/model"
+	"gorm.io/gorm"
 )
 
 type DataStore interface {
@@ -10,26 +11,22 @@ type DataStore interface {
 	Create(license model.License) (err error)
 }
 
-type dataStore struct {
-	db sqlx.DB
+type dataStoreImpl struct {
+	db *gorm.DB
 }
 
 // New creates a new datastore
-func New(db sqlx.DB) DataStore {
-	return dataStore{db: db}
+func New() DataStore {
+	db := database.GetDatabase()
+	return dataStoreImpl{db: db}
 }
 
-func (ds dataStore) Get(id string, version string) (license model.License, err error) {
-	return license, ds.db.Get(&license, "SELECT * FROM licenses WHERE id = $1 and version = $2", id, version)
+func (ds dataStoreImpl) Get(id string, version string) (license model.License, err error) {
+	err = ds.db.Where("id = ? AND version >= ?", id, version).Find(&license).Error
+	return
 }
 
-func (ds dataStore) Create(license model.License) (err error) {
-	_, err = ds.db.Exec(
-		"INSERT INTO licenses(id, version, created_at, info) VALUES($1, $2, $3, $4)",
-		license.ID,
-		license.Version,
-		license.CreatedAt,
-		license.Info,
-	)
+func (ds dataStoreImpl) Create(license model.License) (err error) {
+	err = ds.db.Create(license).Error
 	return
 }

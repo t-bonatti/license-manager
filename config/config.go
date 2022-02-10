@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	Port        string `env:"PORT" envDefault:"3000"`
-	DatabaseURL string `env:"DATABASE_URL" envDefault:"postgres://localhost:5432/license?sslmode=disable"`
+	DatabaseDSN string `env:"DATABASE_DSN" envDefault:"host=localhost port=5432 user=postgres dbname=license sslmode=disable password="`
 }
 
 func Get() (cfg Config) {
