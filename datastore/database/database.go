@@ -23,7 +23,7 @@ func StartDB(dsn string) {
 	config.SetMaxOpenConns(100)
 	config.SetConnMaxLifetime(time.Hour)
 
-	//migrations.RunMigrations(db)
+	// TODO Implements migrations: migrations.RunMigrations(db)
 }
 
 func CloseConn() error {
