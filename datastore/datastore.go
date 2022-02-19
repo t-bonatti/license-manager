@@ -7,8 +7,8 @@ import (
 )
 
 type DataStore interface {
-	Get(id string, version string) (license model.License, err error)
-	Create(license model.License) (err error)
+	Get(id string, version string) (model.License, error)
+	Create(license model.License) error
 }
 
 type dataStoreImpl struct {
