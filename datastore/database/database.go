@@ -10,6 +10,7 @@ import (
 
 var db *gorm.DB
 
+// StartDB initiate connection with postgres
 func StartDB(dsn string) {
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
@@ -26,6 +27,7 @@ func StartDB(dsn string) {
 	// TODO Implements migrations: migrations.RunMigrations(db)
 }
 
+// CloseConn close connection with postgres
 func CloseConn() error {
 	config, err := db.DB()
 	if err != nil {
@@ -40,6 +42,7 @@ func CloseConn() error {
 	return nil
 }
 
+// GetDatabase return database connection
 func GetDatabase() *gorm.DB {
 	return db
 }

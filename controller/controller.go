@@ -9,6 +9,7 @@ import (
 	"github.com/t-bonatti/license-manager/model"
 )
 
+// Controller interface
 type Controller interface {
 	Get() gin.HandlerFunc
 	Create() gin.HandlerFunc

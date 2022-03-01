@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
+// License struct
 type License struct {
 	ID        string         `json:"id"`
 	Version   string         `json:"version"`

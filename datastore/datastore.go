@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// DataStore interface
 type DataStore interface {
 	Get(id string, version string) (model.License, error)
 	Create(license model.License) error

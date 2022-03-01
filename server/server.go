@@ -7,6 +7,7 @@ import (
 	"github.com/t-bonatti/license-manager/controller"
 )
 
+// New returns gin.Engine
 func New() *gin.Engine {
 	c := controller.New()
 	r := gin.Default()
