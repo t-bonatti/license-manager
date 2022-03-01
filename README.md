@@ -1,5 +1,5 @@
 # License Manager
-[![CircleCI](https://circleci.com/gh/t-bonatti/license-manager.svg?style=shield)](https://circleci.com/gh/t-bonatti/license-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/t-bonatti/license-manager)](https://goreportcard.com/report/github.com/t-bonatti/license-manager)
+[![CircleCI](https://circleci.com/gh/t-bonatti/license-manager.svg?style=shield)](https://circleci.com/gh/t-bonatti/license-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/t-bonatti/license-manager?u=1)](https://goreportcard.com/report/github.com/t-bonatti/license-manager)
 
 Manage application licenses with versions
 
