@@ -13,6 +13,8 @@ jobs:
       - checkout
       - run: mkdir -p "$TEST_RESULTS"
       - run: go get github.com/jstemmer/go-junit-report
+      - run: go get github.com/onsi/ginkgo/v2/ginkgo
+      - run: go get github.com/onsi/gomega/...
       - run: make setup
       - run:
           name: Run unit tests
