@@ -11,6 +11,7 @@ Currently it is used:
 
 - [gorm](https://gorm.io/)
 - [gin](https://github.com/gin-gonic/gin)
+- [ginkgo](https://onsi.github.io/ginkgo/)
 
 # Dependences
 
