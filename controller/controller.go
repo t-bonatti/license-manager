@@ -1,12 +1,14 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/t-bonatti/license-manager/datastore"
 	"github.com/t-bonatti/license-manager/model"
+	"gorm.io/gorm"
 )
 
 // Controller interface
@@ -51,7 +53,7 @@ func (ctrl controllerImpl) Get() gin.HandlerFunc {
 
 		license, err := ctrl.ds.Get(id, version)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
 				c.String(http.StatusNotFound, "Not found")
 			} else {
 				c.String(http.StatusInternalServerError, err.Error())

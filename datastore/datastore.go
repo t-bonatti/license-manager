@@ -23,7 +23,7 @@ func New() DataStore {
 }
 
 func (ds dataStoreImpl) Get(id string, version string) (license model.License, err error) {
-	err = ds.db.Where("id = ? AND version >= ?", id, version).Find(&license).Error
+	err = ds.db.Where("id = ? AND version = ?", id, version).First(&license).Error
 	return
 }
 
